@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "FelPet",
+    "slug": "FelPet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#FF7A59",
+          "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O FelPet acessa suas fotos para você escolher a foto do seu pet.",
+          "cameraPermission": "O FelPet usa a câmera para você tirar a foto do seu pet.",
+          "microphonePermission": false
+        }
+      ]
+    ]
+  }
+}
