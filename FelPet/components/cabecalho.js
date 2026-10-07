@@ -1,5 +1,7 @@
-import { useNavigation, useRoute, StackActions } from "@react-navigation/native";
+import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation, useRoute, StackActions } from "@react-navigation/native";
+import { Feather } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { cores } from "../constants/tema";
 
@@ -25,11 +27,15 @@ export default function Cabecalho() {
       </View>
 
       {mostrarVoltar ? (
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.voltar} hitSlop={10}>
-          <Text style={styles.voltarTexto}>‹</Text>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.voltar}
+          hitSlop={10}
+        >
+          <Feather name="chevron-left" size={28} color={cores.primaria} />
         </TouchableOpacity>
       ) : (
-        <View />
+        <View style={styles.placeholder} />
       )}
 
       <TouchableOpacity onPress={irParaPerfil}>
@@ -62,9 +68,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  titulo: { fontSize: 18, fontWeight: "bold", color: "#000" },
-  voltar: { width: 40, height: 40, justifyContent: "center" },
-  voltarTexto: { fontSize: 38, color: cores.primaria, lineHeight: 40 },
+  titulo: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  voltar: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  placeholder: {
+    width: 40,
+  },
   avatar: {
     width: 40,
     height: 40,
@@ -73,5 +90,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatarTexto: { color: "#fff", fontWeight: "800", fontSize: 18 },
+  avatarTexto: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 18,
+  },
 });

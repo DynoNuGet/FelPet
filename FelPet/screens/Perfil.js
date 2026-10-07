@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import {
-  View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Alert,
-  KeyboardAvoidingView, Platform,
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Modal,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { Feather, FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import Layout from "../components/Layout";
 import { Botao, Campo, Chip } from "../components/UI";
 import { useAuth } from "../context/AuthContext";
@@ -13,12 +22,16 @@ import { cores, sombra } from "../constants/tema";
 
 const ESPECIES = ["Cachorro", "Gato", "Pássaro", "Outro"];
 
-function emojiEspecie(especie) {
+function IconeEspecie({ especie, size = 30, color = cores.texto }) {
   switch (especie) {
-    case "Cachorro": return "🐶";
-    case "Gato": return "🐱";
-    case "Pássaro": return "🐦";
-    default: return "🐾";
+    case "Cachorro":
+      return <FontAwesome5 name="dog" size={size} color={color} />;
+    case "Gato":
+      return <FontAwesome5 name="cat" size={size} color={color} />;
+    case "Pássaro":
+      return <MaterialCommunityIcons name="bird" size={size} color={color} />;
+    default:
+      return <FontAwesome5 name="paw" size={size} color={color} />;
   }
 }
 
@@ -35,7 +48,10 @@ export default function Perfil() {
 
   const nomeUsuario = user?.displayName || "Tutor";
   const desde = user?.metadata?.creationTime
-    ? new Date(user.metadata.creationTime).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+    ? new Date(user.metadata.creationTime).toLocaleDateString("pt-BR", {
+        month: "long",
+        year: "numeric",
+      })
     : null;
 
   function confirmarLogout() {
@@ -55,17 +71,28 @@ export default function Perfil() {
   }
 
   async function escolherFoto(origem) {
-    const opcoes = { mediaTypes: ["images"], allowsEditing: true, aspect: [1, 1], quality: 0.2, base64: true };
+    const opcoes = {
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.2,
+      base64: true,
+    };
     let r;
-    
+
     if (origem === "camera") {
       const perm = await ImagePicker.requestCameraPermissionsAsync();
-      if (!perm.granted) return Alert.alert("Permissão necessária", "Permita o acesso à câmera para tirar a foto.");
+      if (!perm.granted) {
+        return Alert.alert(
+          "Permissão necessária",
+          "Permita o acesso à câmera para tirar a foto."
+        );
+      }
       r = await ImagePicker.launchCameraAsync(opcoes);
     } else {
       r = await ImagePicker.launchImageLibraryAsync(opcoes);
     }
-    
+
     if (!r.canceled) {
       const a = r.assets[0];
       setFoto(a.base64 ? `data:image/jpeg;base64,${a.base64}` : a.uri);
@@ -95,8 +122,7 @@ export default function Perfil() {
 
   return (
     <Layout>
-      <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 30 }}>
-        
+      <ScrollView contentContainerStyle={s.scrollContainer}>
         <View style={s.cardUsuario}>
           <View style={s.avatar}>
             <Text style={s.avatarTexto}>{nomeUsuario.charAt(0).toUpperCase()}</Text>
@@ -115,9 +141,15 @@ export default function Perfil() {
 
         {pets.length === 0 ? (
           <View style={s.vazio}>
-            <Text style={{ fontSize: 44 }}>🐾</Text>
-            <Text style={s.vazioTexto}>Cadastre seu primeiro pet para poder agendar banho, tosa e consultas.</Text>
-            <Botao titulo="Adicionar pet" onPress={() => setModal(true)} style={{ marginTop: 12, alignSelf: "stretch" }} />
+            <FontAwesome5 name="paw" size={44} color={cores.textoSuave} />
+            <Text style={s.vazioTexto}>
+              Cadastre seu primeiro pet para poder agendar banho, tosa e consultas.
+            </Text>
+            <Botao
+              titulo="Adicionar pet"
+              onPress={() => setModal(true)}
+              style={s.botaoVazio}
+            />
           </View>
         ) : (
           pets.map((p) => (
@@ -126,25 +158,35 @@ export default function Perfil() {
                 <Image source={{ uri: p.foto }} style={s.petFoto} />
               ) : (
                 <View style={[s.petFoto, s.petSemFoto]}>
-                  <Text style={{ fontSize: 30 }}>{emojiEspecie(p.especie)}</Text>
+                  <IconeEspecie especie={p.especie} size={28} color={cores.primaria} />
                 </View>
               )}
-              <View style={{ flex: 1, marginLeft: 14 }}>
+              <View style={s.petDetalhes}>
                 <Text style={s.petNome}>{p.nome}</Text>
-                <Text style={s.petInfo}>{[p.especie, p.raca].filter(Boolean).join(" • ")}</Text>
+                <Text style={s.petInfo}>
+                  {[p.especie, p.raca].filter(Boolean).join(" • ")}
+                </Text>
               </View>
               <TouchableOpacity onPress={() => confirmarRemocao(p)} hitSlop={10}>
-                <Text style={{ fontSize: 20 }}>🗑️</Text>
+                <Feather name="trash-2" size={20} color={cores.erro} />
               </TouchableOpacity>
             </View>
           ))
         )}
 
-        <Botao titulo="Sair da conta" variante="perigo" onPress={confirmarLogout} style={{ marginTop: 28 }} />
+        <Botao
+          titulo="Sair da conta"
+          variante="perigo"
+          onPress={confirmarLogout}
+          style={s.botaoSair}
+        />
       </ScrollView>
 
       <Modal visible={modal} animationType="slide" transparent onRequestClose={fechar}>
-        <KeyboardAvoidingView style={s.fundoModal} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+        <KeyboardAvoidingView
+          style={s.fundoModal}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
           <View style={s.modal}>
             <Text style={s.modalTitulo}>Novo pet</Text>
 
@@ -153,26 +195,42 @@ export default function Perfil() {
                 <Image source={{ uri: foto }} style={s.fotoPreview} />
               ) : (
                 <View style={[s.fotoPreview, s.fotoVazia]}>
-                  <Text style={{ fontSize: 30 }}>📷</Text>
-                  <Text style={{ fontSize: 11, color: cores.textoSuave }}>Adicionar foto</Text>
+                  <Feather name="camera" size={28} color={cores.textoSuave} />
+                  <Text style={s.fotoVaziaTexto}>Adicionar foto</Text>
                 </View>
               )}
             </TouchableOpacity>
 
-            <Campo rotulo="Nome" value={nome} onChangeText={setNome} placeholder="Ex.: Thor" erro={erro} />
+            <Campo
+              rotulo="Nome"
+              value={nome}
+              onChangeText={setNome}
+              placeholder="Ex.: Thor"
+              erro={erro}
+            />
 
             <Text style={s.rotulo}>Espécie</Text>
-            <View style={{ flexDirection: "row", marginBottom: 14 }}>
+            <View style={s.grupoEspecies}>
               {ESPECIES.map((e) => (
                 <Chip key={e} texto={e} ativo={especie === e} onPress={() => setEspecie(e)} />
               ))}
             </View>
 
-            <Campo rotulo="Raça (opcional)" value={raca} onChangeText={setRaca} placeholder="Ex.: Labrador" />
+            <Campo
+              rotulo="Raça (opcional)"
+              value={raca}
+              onChangeText={setRaca}
+              placeholder="Ex.: Labrador"
+            />
 
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              <Botao titulo="Cancelar" variante="secundario" onPress={fechar} style={{ flex: 1 }} />
-              <Botao titulo="Salvar" onPress={salvar} style={{ flex: 1 }} />
+            <View style={s.botoesModal}>
+              <Botao
+                titulo="Cancelar"
+                variante="secundario"
+                onPress={fechar}
+                style={s.botaoFlex}
+              />
+              <Botao titulo="Salvar" onPress={salvar} style={s.botaoFlex} />
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -182,33 +240,171 @@ export default function Perfil() {
 }
 
 const s = StyleSheet.create({
-  cardUsuario: { 
-    backgroundColor: "#fff", 
-    borderRadius: 22, 
-    alignItems: "center", 
-    padding: 22, 
-    ...sombra 
+  scrollContainer: {
+    padding: 20,
+    paddingBottom: 30,
   },
-  avatar: { width: 84, height: 84, borderRadius: 42, backgroundColor: cores.primaria, alignItems: "center", justifyContent: "center" },
-  avatarTexto: { color: "#fff", fontSize: 38, fontWeight: "900" },
-  nome: { fontSize: 22, fontWeight: "900", color: cores.texto, marginTop: 12 },
-  email: { color: cores.textoSuave, marginTop: 2 },
-  desde: { color: cores.secundaria, fontWeight: "700", marginTop: 8, textTransform: "capitalize" },
-  tituloLinha: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 26, marginBottom: 12 },
-  secao: { fontSize: 18, fontWeight: "900", color: cores.texto },
-  adicionar: { color: cores.primaria, fontWeight: "800", fontSize: 15 },
-  vazio: { backgroundColor: "#fff", borderRadius: 18, padding: 20, alignItems: "center", borderWidth: 1, borderColor: cores.borda },
-  vazioTexto: { textAlign: "center", color: cores.textoSuave, marginTop: 8 },
-  cardPet: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 18, padding: 12, marginBottom: 10, ...sombra },
-  petFoto: { width: 64, height: 64, borderRadius: 32 },
-  petSemFoto: { backgroundColor: "#FFF1EC", alignItems: "center", justifyContent: "center" },
-  petNome: { fontSize: 17, fontWeight: "800", color: cores.texto },
-  petInfo: { color: cores.textoSuave, marginTop: 2 },
-  fundoModal: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.4)" },
-  modal: { backgroundColor: cores.fundo, borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 22, paddingBottom: 30 },
-  modalTitulo: { fontSize: 20, fontWeight: "900", color: cores.texto, textAlign: "center", marginBottom: 14 },
-  fotoBtn: { alignSelf: "center", marginBottom: 18 },
-  fotoPreview: { width: 96, height: 96, borderRadius: 48 },
-  fotoVazia: { backgroundColor: "#fff", borderWidth: 2, borderStyle: "dashed", borderColor: cores.borda, alignItems: "center", justifyContent: "center" },
-  rotulo: { fontSize: 13, color: cores.textoSuave, marginBottom: 6, fontWeight: "600" },
+  cardUsuario: {
+    backgroundColor: "#fff",
+    borderRadius: 22,
+    alignItems: "center",
+    padding: 22,
+    ...sombra,
+  },
+  avatar: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    backgroundColor: cores.primaria,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarTexto: {
+    color: "#fff",
+    fontSize: 38,
+    fontWeight: "900",
+  },
+  nome: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: cores.texto,
+    marginTop: 12,
+  },
+  email: {
+    color: cores.textoSuave,
+    marginTop: 2,
+  },
+  desde: {
+    color: cores.secundaria,
+    fontWeight: "700",
+    marginTop: 8,
+    textTransform: "capitalize",
+  },
+  tituloLinha: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 26,
+    marginBottom: 12,
+  },
+  secao: {
+    fontSize: 18,
+    fontWeight: "900",
+    color: cores.texto,
+  },
+  adicionar: {
+    color: cores.primaria,
+    fontWeight: "800",
+    fontSize: 15,
+  },
+  vazio: {
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: cores.borda,
+  },
+  vazioTexto: {
+    textAlign: "center",
+    color: cores.textoSuave,
+    marginTop: 8,
+  },
+  botaoVazio: {
+    marginTop: 12,
+    alignSelf: "stretch",
+  },
+  cardPet: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    padding: 12,
+    marginBottom: 10,
+    ...sombra,
+  },
+  petFoto: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+  },
+  petSemFoto: {
+    backgroundColor: "#FFF1EC",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  petDetalhes: {
+    flex: 1,
+    marginLeft: 14,
+  },
+  petNome: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: cores.texto,
+  },
+  petInfo: {
+    color: cores.textoSuave,
+    marginTop: 2,
+  },
+  botaoSair: {
+    marginTop: 28,
+  },
+  fundoModal: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  modal: {
+    backgroundColor: cores.fundo,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    padding: 22,
+    paddingBottom: 30,
+  },
+  modalTitulo: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: cores.texto,
+    textAlign: "center",
+    marginBottom: 14,
+  },
+  fotoBtn: {
+    alignSelf: "center",
+    marginBottom: 18,
+  },
+  fotoPreview: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+  },
+  fotoVazia: {
+    backgroundColor: "#fff",
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: cores.borda,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  fotoVaziaTexto: {
+    fontSize: 11,
+    color: cores.textoSuave,
+    marginTop: 4,
+  },
+  rotulo: {
+    fontSize: 13,
+    color: cores.textoSuave,
+    marginBottom: 6,
+    fontWeight: "600",
+  },
+  grupoEspecies: {
+    flexDirection: "row",
+    marginBottom: 14,
+  },
+  botoesModal: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  botaoFlex: {
+    flex: 1,
+  },
 });

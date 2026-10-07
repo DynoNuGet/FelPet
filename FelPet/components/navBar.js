@@ -1,12 +1,14 @@
-import { useNavigation, useRoute, StackActions } from "@react-navigation/native";
+import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation, useRoute, StackActions } from "@react-navigation/native";
+import { Feather } from "@expo/vector-icons";
 import { useNotif } from "../context/NotifContext";
 import { cores, sombra } from "../constants/tema";
 
 const ABAS = [
-  { nome: "Home", rotulo: "Home", emoji: "🏠" },
-  { nome: "Notificações", rotulo: "Notificações", emoji: "🔔" },
-  { nome: "Perfil", rotulo: "Perfil", emoji: "👤" },
+  { nome: "Home", rotulo: "Home", icone: "home" },
+  { nome: "Notificações", rotulo: "Notificações", icone: "bell" },
+  { nome: "Perfil", rotulo: "Perfil", icone: "user" },
 ];
 
 export default function NavBar() {
@@ -22,17 +24,27 @@ export default function NavBar() {
     <View style={styles.container}>
       {ABAS.map((a) => {
         const ativa = route.name === a.nome;
+        const corIcone = ativa ? cores.primaria : cores.textoSuave;
+
         return (
-          <TouchableOpacity key={a.nome} style={[styles.button, ativa && styles.buttonAtivo]} onPress={() => ir(a.nome)}>
-            <View>
-              <Text style={styles.emoji}>{a.emoji}</Text>
+          <TouchableOpacity
+            key={a.nome}
+            style={[styles.button, ativa && styles.buttonAtivo]}
+            onPress={() => ir(a.nome)}
+          >
+            <View style={styles.iconeWrapper}>
+              <Feather name={a.icone} size={20} color={corIcone} />
               {a.nome === "Notificações" && naoLidas > 0 && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeTexto}>{naoLidas > 9 ? "9+" : naoLidas}</Text>
+                  <Text style={styles.badgeTexto}>
+                    {naoLidas > 9 ? "9+" : naoLidas}
+                  </Text>
                 </View>
               )}
             </View>
-            <Text style={[styles.rotulo, ativa && { color: cores.primaria, fontWeight: "800" }]}>{a.rotulo}</Text>
+            <Text style={[styles.rotulo, ativa && styles.rotuloAtivo]}>
+              {a.rotulo}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -55,10 +67,30 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     ...sombra,
   },
-  button: { flex: 1, height: 50, alignItems: "center", justifyContent: "center", borderRadius: 30 },
-  buttonAtivo: { backgroundColor: "#FFF1EC" },
-  emoji: { fontSize: 20 },
-  rotulo: { fontSize: 11, color: cores.textoSuave, marginTop: 1 },
+  button: {
+    flex: 1,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 30,
+  },
+  buttonAtivo: {
+    backgroundColor: "#FFF1EC",
+  },
+  iconeWrapper: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rotulo: {
+    fontSize: 11,
+    color: cores.textoSuave,
+    marginTop: 2,
+  },
+  rotuloAtivo: {
+    color: cores.primaria,
+    fontWeight: "800",
+  },
   badge: {
     position: "absolute",
     top: -4,
@@ -71,5 +103,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 3,
   },
-  badgeTexto: { color: "#fff", fontSize: 10, fontWeight: "800" },
+  badgeTexto: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "800",
+  },
 });

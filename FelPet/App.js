@@ -4,12 +4,10 @@ import { NavigationContainer, createNavigationContainerRef } from "@react-naviga
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as Notifications from "expo-notifications";
 
-// Contextos
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { PetsProvider } from "./context/PetsContext";
 import { NotifProvider } from "./context/NotifContext";
 
-// Telas
 import Home from "./screens/Home";
 import Cadastro from "./screens/Cadastro";
 import Notif from "./screens/Notif";
@@ -23,7 +21,6 @@ import { cores } from "./constants/tema";
 const Stack = createNativeStackNavigator();
 const navigationRef = createNavigationContainerRef();
 
-// Tabelas
 const telasPublicas = [
   { name: "Login", component: Login },
   { name: "Cadastro", component: Cadastro },
@@ -78,7 +75,6 @@ function Rotas() {
   );
 }
 
-// Função
 export default function App() {
   return (
     <AuthProvider>

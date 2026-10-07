@@ -1,4 +1,6 @@
+import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { MaterialCommunityIcons, FontAwesome5, Feather } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import Layout from "../components/Layout";
 import { SERVICOS } from "../constants/tema";
@@ -7,40 +9,54 @@ export default function Home({ navigation }) {
   const { user } = useAuth();
   const primeiroNome = user?.displayName?.split(" ")[0];
 
-  const agendar = (tipo) => navigation.navigate("Agendar", { tipo, titulo: `Agendar ${SERVICOS[tipo].titulo.toLowerCase()}` });
+  const agendar = (tipo) =>
+    navigation.navigate("Agendar", {
+      tipo,
+      titulo: `Agendar ${SERVICOS[tipo].titulo.toLowerCase()}`,
+    });
 
   return (
     <Layout>
       <View style={styles.container}>
-        <Text style={styles.ola}>Olá{primeiroNome ? `, ${primeiroNome}` : ""}! 👋</Text>
+        <View style={styles.olaContainer}>
+          <Text style={styles.ola}>Olá{primeiroNome ? `, ${primeiroNome}` : ""}!</Text>
+        </View>
+
         <Text style={styles.sub}>O que o seu pet precisa hoje?</Text>
 
         <View style={styles.optionView}>
           <View style={styles.optionHorView}>
             <TouchableOpacity
-              style={{ ...styles.optionButton, backgroundColor: "rgb(181, 161, 255)" }}
+              style={[styles.optionButton, styles.buttonBanho]}
               onPress={() => agendar("banho")}
             >
+              <MaterialCommunityIcons name="shower" size={44} color="#FFF" style={styles.optionIcon} />
               <Text style={styles.optionText}>Agende seu banho</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
-              style={{ ...styles.optionButton, backgroundColor: "rgb(255, 172, 88)" }}
+              style={[styles.optionButton, styles.buttonTosa]}
               onPress={() => agendar("tosa")}
             >
+              <Feather name="scissors" size={44} color="#FFF" style={styles.optionIcon} />
               <Text style={styles.optionText}>Agende sua tosa</Text>
             </TouchableOpacity>
           </View>
+
           <View style={styles.optionHorView}>
             <TouchableOpacity
-              style={{ ...styles.optionButton, backgroundColor: "rgb(75, 255, 195)" }}
+              style={[styles.optionButton, styles.buttonConsulta]}
               onPress={() => agendar("consulta")}
             >
+              <FontAwesome5 name="stethoscope" size={40} color="#FFF" style={styles.optionIcon} />
               <Text style={styles.optionText}>Agende sua consulta</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
-              style={{ ...styles.optionButton, backgroundColor: "rgb(233, 224, 97)" }}
+              style={[styles.optionButton, styles.buttonProdutos]}
               onPress={() => navigation.navigate("Produtos", { titulo: "Produtos" })}
             >
+              <Feather name="shopping-bag" size={44} color="#FFF" style={styles.optionIcon} />
               <Text style={styles.optionText}>Compre nossos produtos</Text>
             </TouchableOpacity>
           </View>
@@ -51,11 +67,37 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 20, paddingTop: 16 },
-  ola: { fontSize: 26, fontWeight: "900", color: "#2B2B2B" },
-  sub: { color: "#7A7A7A", fontSize: 15, marginTop: 2, marginBottom: 16 },
-  optionView: { flex: 1, marginBottom: 200, gap: 12 },
-  optionHorView: { flex: 1, flexDirection: "row", gap: 12 },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  olaContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  ola: {
+    fontSize: 26,
+    fontWeight: "900",
+    color: "#2B2B2B",
+  },
+  sub: {
+    color: "#7A7A7A",
+    fontSize: 15,
+    marginTop: 2,
+    marginBottom: 16,
+  },
+  optionView: {
+    flex: 1,
+    marginBottom: 200,
+    gap: 12,
+  },
+  optionHorView: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 12,
+  },
   optionButton: {
     flex: 1,
     borderRadius: 20,
@@ -63,6 +105,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 18,
   },
-  optionEmoji: { fontSize: 44, marginBottom: 8 },
-  optionText: { fontSize: 18, fontWeight: "bold", color: "#FFF", textAlign: "center" },
+  buttonBanho: {
+    backgroundColor: "rgb(181, 161, 255)",
+  },
+  buttonTosa: {
+    backgroundColor: "rgb(255, 172, 88)",
+  },
+  buttonConsulta: {
+    backgroundColor: "rgb(75, 255, 195)",
+  },
+  buttonProdutos: {
+    backgroundColor: "rgb(233, 224, 97)",
+  },
+  optionIcon: {
+    marginBottom: 8,
+  },
+  optionText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FFF",
+    textAlign: "center",
+  },
 });

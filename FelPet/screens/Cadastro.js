@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { Botao, Campo } from "../components/UI";
 import { cadastrar, mensagemErro } from "../services/auth";
 import { useAuth } from "../context/AuthContext";
@@ -18,8 +19,10 @@ export default function Cadastro({ navigation }) {
     if (!nome.trim() || !email.trim() || !senha) return setErro("Preencha todos os campos.");
     if (senha.length < 6) return setErro("A senha precisa ter pelo menos 6 caracteres.");
     if (senha !== confirmar) return setErro("As senhas não conferem.");
+    
     setErro("");
     setCarregando(true);
+    
     try {
       await cadastrar(nome, email, senha);
       refresh();
@@ -30,12 +33,21 @@ export default function Cadastro({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView style={s.keyboardContainer} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
+        <View style={s.logoContainer}>
+          <Feather name="user-plus" size={48} color={cores.primaria} />
+        </View>
+        
         <Text style={s.titulo}>Criar conta</Text>
         <Text style={s.sub}>Leva menos de um minuto</Text>
 
-        <Campo rotulo="Nome" value={nome} onChangeText={setNome} placeholder="Seu nome" />
+        <Campo 
+          rotulo="Nome" 
+          value={nome} 
+          onChangeText={setNome} 
+          placeholder="Seu nome" 
+        />
         <Campo
           rotulo="E-mail"
           value={email}
@@ -60,12 +72,14 @@ export default function Cadastro({ navigation }) {
           secureTextEntry
           autoCapitalize="none"
         />
+        
         {erro ? <Text style={s.erro}>{erro}</Text> : null}
+        
         <Botao titulo="Cadastrar" onPress={handleCadastro} carregando={carregando} />
 
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 20 }}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={s.botaoVoltar}>
           <Text style={s.link}>
-            Já tem conta? <Text style={{ fontWeight: "800" }}>Entrar</Text>
+            Já tem conta? <Text style={s.linkDestaque}>Entrar</Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -74,10 +88,45 @@ export default function Cadastro({ navigation }) {
 }
 
 const s = StyleSheet.create({
-  container: { flexGrow: 1, justifyContent: "center", padding: 24, backgroundColor: cores.fundo },
-  logo: { fontSize: 48, textAlign: "center" },
-  titulo: { fontSize: 30, fontWeight: "900", color: cores.primaria, textAlign: "center" },
-  sub: { textAlign: "center", color: cores.textoSuave, marginTop: 4, marginBottom: 24 },
-  erro: { color: cores.erro, marginBottom: 12, textAlign: "center" },
-  link: { textAlign: "center", color: cores.secundaria, fontSize: 15 },
+  keyboardContainer: {
+    flex: 1,
+  },
+  container: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: cores.fundo,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  titulo: {
+    fontSize: 30,
+    fontWeight: "900",
+    color: cores.primaria,
+    textAlign: "center",
+  },
+  sub: {
+    textAlign: "center",
+    color: cores.textoSuave,
+    marginTop: 4,
+    marginBottom: 24,
+  },
+  erro: {
+    color: cores.erro,
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  botaoVoltar: {
+    marginTop: 20,
+  },
+  link: {
+    textAlign: "center",
+    color: cores.secundaria,
+    fontSize: 15,
+  },
+  linkDestaque: {
+    fontWeight: "800",
+  },
 });
